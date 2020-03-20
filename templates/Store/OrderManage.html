@@ -1,0 +1,110 @@
+{% extends 'Store/storebase.html' %}
+{% block title %}
+    订单管理
+{% endblock %}
+{% block leftside %}
+    {% include 'Store/storeleftside.html' %}
+{% endblock %}
+{% block css %}
+{% endblock %}
+{% block main %}
+    <div class="main">
+            <div class="input-group">
+                <input type="text" class="form-control" id="search_time" placeholder="根据时间查找订单">
+                <span class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="search_order(1)">查找</button>
+                </span>
+            </div>
+            <div class="input-group">
+                <input type="text" id="search_id" class="form-control" placeholder="查找订单编号">
+                <span class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="search_order(2)">查找</button>
+                </span>
+            </div>
+        <div style="width: 1200px;margin: 0 auto;padding-top: 40px;font-size: 20px">
+            <table class="table table-hover ">
+                <thead>
+                <tr>
+                    <th>订单编号</th>
+                    <th>订单详情</th>
+                    <th>订单价格</th>
+                    <th>订单状态</th>
+                    <th>创建时间</th>
+                    <th>结束时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for order in order_list %}
+                    <tr>
+                        <td>{{ order.order_id }}</td>
+                        <td>
+                            <a data-toggle="modal" href="/store/orderdetail/{{ order.order_id }}"
+                               data-target="#show_details">查看详情</a></td>
+                        <td>{{ order.total_price }}</td>
+                        <td>{% if order.order_status == 0 %}
+                            已取消
+                        {% elif order.order_status == 1 %}
+                            未接单
+                        {% elif order.order_status == 2 %}
+                            已接单
+                        {% elif order.order_status == 3 %}
+                            骑手接单
+                        {% elif order.order_status == 3 %}
+                            骑手取到商品
+                        {% elif order.order_status == 3 %}
+                            已送达
+
+                        {% endif %}</td>
+                        <td>{{ order.create_date }}</td>
+                        <td>{% if order.finish_time == None %}暂无{% else %}{{ order.finish_time }}{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <nav aria-label="Page navigation">
+          <ul class="pagination">
+              {{ page_info.pager|safe}}
+          </ul>
+        </nav>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade " id="show_details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $("#leftside li:eq(2)").addClass("layui-this")
+        $('#show_details').on('hidden.bs.modal', function () {
+            $(this).removeData("bs.modal");
+            $(this).find(".modal-content").children().remove();
+        })
+        layui.use('laydate', function () {
+            var laydate = layui.laydate;
+            //日期范围
+            laydate.render({
+                elem: '#search_time'
+                , range: true
+            });
+        });
+        function search_order(type) {
+            if(type===1){
+                {#根据时间查找#}
+                var search_time=$("#search_time").val()
+                var time=search_time.split(" - ")
+                console.log(time)
+                location.href='/store/searchorder/?type=1&starttime='+time[0]+'&endtime='+time[1]
+
+            }else{
+                var search_id=$("#search_id").val()
+                location.href='/store/searchorder/?type=2&search_id='+search_id
+            }
+
+        }
+    </script>
+{% endblock %}

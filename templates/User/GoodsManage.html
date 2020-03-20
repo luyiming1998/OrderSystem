@@ -1,0 +1,84 @@
+{% extends 'User/userbase.html' %}
+{% block css %}
+{% endblock %}
+{% block main %}
+    {% csrf_token %}
+    <div class="main" style="background-color: #f7f7f7">
+        <ol class="breadcrumb">
+            <li><a>商家分类：</a></li>
+            <li><a href="#">全部商家</a></li>
+            <li class="active">美食</li>
+        </ol>
+        <form method="GET" action="/user/search_store/">
+
+                <div class="input-group" style="width: 1285px;margin: 0 auto">
+                        <input class="form-control" type="text" placeholder="搜索商家，美食...." name="store_name" value="{{ store_name }}">
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">查找</button>
+                  </span>
+                </div><!-- /input-group -->
+
+        </form>
+        <div style="width: 1285px;height: 100%;margin: 0 auto;border: 1px solid #eee;background-color: white" >
+            {% for row in posts.object_list %}
+                <div class="media" onclick="show_store({{ row.store_id }})" style="padding: 20px;border-bottom: 1px solid #eee;width: 320px;height: 140px;float: left;margin-top: 0;" tabindex="0" role="button"
+                data-toggle="popover" data-trigger="hover" title="{{ row.store_name }}" data-content="{{ row.remark }}" data-placement="right">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" src="/upload/{{ row.store_avatar }}" alt="..."
+                                 style="width: 70px;height: 70px">
+                            <span style="color: #999;font-size: 12px;display: block;width: 42px;height: 16px;margin: 0 auto;margin-top: 15px">30分钟</span>
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">{{ row.store_name |truncatechars:10}}</h4>
+                        <div id="test9"></div>
+                        <p style="color: #999;font-size: 12px">配送费1元</p>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li>
+                    {% if posts.has_previous %}
+                        <a href="/user/goodsmanage?page={{ posts.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    {% endif %}
+                </li>
+                {% for num in posts.paginator.page_range %}
+                    <li><a href="/user/goodsmanage?page={{ num }}">{{ num }}</a></li>
+                {% endfor %}
+                <li>
+                    {% if posts.has_next %}
+                        <a href="/user/goodsmanage?page={{ posts.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        });
+        function show_store(id){
+            location.href="/user/display/?store_id="+id
+        }
+        layui.use(['rate'], function () {
+            var rate = layui.rate;
+            rate.render({
+                elem: '#test9'
+                , value: 4
+                , readonly: true
+            });
+        })
+    </script>
+{% endblock %}

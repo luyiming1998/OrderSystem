@@ -1,0 +1,200 @@
+{% extends 'Store/storebase.html' %}
+{% block title %}
+    订单大厅
+{% endblock %}
+{% block css %}
+    <style>
+        .ordermain {
+            background-color: #efefef;
+            min-width: 1000px;
+            position: absolute;
+            left: 0;
+            top: 60px;
+            right: 0;
+            bottom: 0;
+            padding: 0 20px 0 75px;
+        }
+    </style>
+    <meta http-equiv="refresh" content="10">
+{% endblock %}
+{% block main %}
+
+<div class="ordermain">
+<nav aria-label="..." style="position: absolute;left: 25px;top: 40%">
+  <ul class="pager">
+    <li class="previous">
+        {% if post.has_previous%}
+        <a href="/store/orderhall/?page={{ post.previous_page_number }}" style="width:50px;height: 200px;line-height: 200px;"><span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span></a>
+        {% endif %}
+    </li>
+  </ul>
+</nav>
+
+<div style="width: 1550px;margin: 0 auto;">
+    {% for order in post.object_list %}
+    <div class="panel panel-default"
+         style="float: left;text-align: center;width: 290px;height: 450px;margin: 0 10px;position: relative">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ forloop.counter }}</h3>
+        </div>
+        <div class="panel-body">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>订单编号：{{ order.order_id }}</legend>
+            </fieldset>
+
+            {% for detail in order.order_details|slice:"9" %}
+                <div class="row" style="font-size: 15px">
+                    <div class="col-md-6 " style="padding-right: 0">{{ detail.good__good_name }}</div>
+                    <div class="col-md-6" style="padding-left: 0">x{{ detail.number }}</div>
+                </div>
+            {% endfor %}
+            {% if order.order_details|length > 9 %}
+                <div style="display: inline-block;width: 40px;position: absolute;right: 15px;top: 180px;color: red;"
+                     tabindex="0" role="button" data-trigger="focus" data-html="true" data-toggle="popover"
+                     data-placement="right" data-content='
+                    {% for detail in order.order_details %}
+                        <div class="row" style="font-size: 15px;width:200px;">
+                            <div class="col-md-10 " style="padding-right: 0">{{ detail.good__good_name }}</div>
+                            <div class="col-md-2" style="padding-left: 0">x{{ detail.number }}</div>
+                        </div>
+                    {% endfor %}'>
+                    <div style="width: 15px">查看完整订单</div>
+                </div><i class="fa fa-angle-double-right fa-lg" aria-hidden="true"
+                         style="position: absolute;right: 20px;top: 230px;color: red"></i>
+            {% endif %}
+            <hr>
+            <p style="float: right" align="right"><i class="fa fa-jpy"
+                                                     aria-hidden="true"> {{ order.total_price }}&nbsp;元</i></p>
+            <p>共：{{ order.order_nums }}&nbsp;份</p>
+
+
+            {% if order.order_status == 1 %}
+                <input type="hidden" class="createtime" id="{{ order.order_id }}"
+                       value="{{ order.create_date |date:'Y-m-d H:i:s' }}">
+                <button type="button" id="order_status{{ order.order_id }}" class="btn btn-primary"
+                        onclick="btn_accept(this,{{ order.order_id }})"
+                        style="width: 250px;height: 50px ;position: absolute;bottom: 10px;left: 25px"></button>
+            {% elif order.order_status == 2 %}
+                <button type="button" id="order_status{{ order.order_id }}" class="btn btn-default"
+                        onclick="btn_accept(this,{{ order.order_id }})"
+                        style="width: 250px;height: 50px ;position: absolute;bottom: 10px;left: 25px">已接单
+                </button>
+            {% elif order.order_status == 3 %}
+                <button type="button" id="order_status{{ order.order_id }}" class="btn btn-default"
+                        onclick="btn_accept(this,{{ order.order_id }})"
+                        style="width: 250px;height: 50px ;position: absolute;bottom: 10px;left: 25px">派送中
+                </button>
+            {% endif %}
+
+        </div>
+    </div>
+    {% endfor %}
+    {% if getneworder %}
+    <audio id="player" autoplay="autoplay">
+       <source src="/static/broadcast.mp3"/>
+    </audio>
+    {% endif %}
+    <audio id="player_late">
+       <source src="/static/broadcast_late.mp3"/>
+    </audio>
+</div>
+    <nav aria-label="..." style="position: absolute;right: 30px;top: 40%">
+      <ul class="pager">
+        <li class="next">
+        {% if post.has_next %}
+            <a href="/store/orderhall/?page={{ post.next_page_number }}" style="width:50px;height: 200px;line-height: 200px;"><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span></a>
+        {% endif %}
+        </li>
+      </ul>
+    </nav>
+</div>
+
+{% endblock %}
+{% block script %}
+    <script>
+        function btn_accept(obj, order_id) {
+            var btn_text = $(obj).text()
+            if (btn_text.substr(0, 2) === "接单") {
+                $.ajax({
+                    url: "/store/update_order_status/",
+                    method: "post",
+                    dataType: "JSON",
+                    data: {"order_id": order_id, "status": 2, "csrfmiddlewaretoken": '{{ csrf_token }}'},
+                    traditional: true,
+                    success: function (args) {
+                        if (args.status) {
+                            var time = $('#order_status' + order_id).attr("timer")
+                            if (time)
+                                clearTimeout(time)
+                            $('#order_status' + order_id).removeClass().addClass('btn btn-default').text("已接单")
+                        } else {
+                            alert(args.message)
+                        }
+                    }
+                })
+            }
+            if (btn_text === "已取消") {
+                $.ajax({
+                    url: "/store/update_order_status/",
+                    method: "post",
+                    dataType: "JSON",
+                    data: {"order_id": order_id, "status": 0, "csrfmiddlewaretoken": '{{ csrf_token }}'},
+                    traditional: true,
+                    success: function (args) {
+                        if (args.status) {
+                            $(obj).parent().parent().remove()
+                            var count=$("#new_count").text()
+                            $("#new_count").text(parseInt(count)-1)
+                        } else {
+                            alert(args.message)
+                        }
+                    }
+                })
+            }
+        }
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
+        layui.use(['util', 'laydate', 'layer'], function () {
+            var arr = $(".createtime")
+            $.each(arr, function (i, j) {
+                var order_id = $(j).attr('id')
+                var util = layui.util
+                //倒计时
+                var thisTimer, setCountdown = function (y, M, d, H, m, s) {
+                    var start_time = $("#" + order_id).val()
+                    var endTime = new Date(start_time)
+                    var min = endTime.getMinutes()
+                    endTime.setMinutes(min + 5)
+                    var serverTime = new Date(); //假设为当前服务器时间，这里采用的是本地时间，实际使用一般是取服务端的
+                    clearTimeout(thisTimer);
+                    util.countdown(endTime, serverTime, function (date, serverTime, timer) {
+                        if (date[2] <= 1) {
+                            $('#order_status' + order_id).removeClass().addClass('btn btn-warning')
+                        }
+                        if (date[2] === 0 && date[3] === 0) {
+                            $('#order_status' + order_id).removeClass().addClass('btn btn-danger').text("已取消");
+                            var player = $("#player_late")[0]; /*jquery对象转换成js对象*/
+                                if (player.paused){ /*如果已经暂停*/
+                                    player.play(); /*播放*/
+                                }else {
+                                    player.pause();/*暂停*/
+                                }
+
+                        } else {
+                            var str = "接单<br/>" + date[2] + '分' + date[3] + '秒';
+                            lay('#order_status' + order_id).html(str);
+                            thisTimer = timer;
+                            $('#order_status' + order_id).attr("timer", timer)
+                        }
+
+                    });
+                };
+                setCountdown(2099, 1, 1);
+            })
+
+
+        });
+    </script>
+{% endblock %}

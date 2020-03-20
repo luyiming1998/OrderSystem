@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商家注册</title>
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+</head>
+<body>
+<div style="width: 1000px;margin: 0 auto">
+    <h1 align="center">骑手注册</h1>
+    <form action="/rider/register/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_account">账号</label>
+            {{ form.account }}
+        </div>
+        <div class="form-group">
+            <label for="id_pwd">密码</label>
+            {{ form.pwd }}
+        </div>
+        <div class="form-group">
+            <label for="id_check_pwd">确认密码:</label>
+            {{ form.check_pwd }}
+        </div>
+
+        <div class="form-group">
+            <label for="id_rider_name">真实姓名</label>
+            {{ form.rider_name }}
+        </div>
+            <div class="form-group">
+            <label for="id_identity_card">身份证号:</label>
+            {{ form.identity_card }}
+        </div>
+        <div class="form-group">
+            <label for="id_user_tel">联系电话</label>
+            {{ form.rider_tel }}
+        </div>
+        <button type="submit" class="btn btn-default">注册</button>
+    </form>
+</div>
+</body>
+</html>

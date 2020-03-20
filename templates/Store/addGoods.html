@@ -1,0 +1,70 @@
+
+{% extends 'Store/storebase.html' %}
+{% block title %}添加商品{% endblock %}
+{% block leftside %}
+    {% include "Store/storeleftside.html" %}
+{% endblock %}
+{% block main %}
+    <div class="main" style="background-color: #efefef">
+    <ol class="breadcrumb">
+        <li><a href="#">商品管理</a></li>
+        <li class="active">添加商品</li>
+    </ol>
+<form action="/store/addgood/" method="post" enctype="multipart/form-data" style="width: 1000px;margin: 0 auto">
+    {% csrf_token %}
+  <div class="form-group">
+    <label for="id_good_pic">商品图片</label>
+    {{form.good_pic}}
+  </div>
+      <div class="form-group">
+    <label for="id_good_name">类型</label><br>
+      {{ form.good_type}}
+          <a style="display: inline" href="/store/addgoodtype" data-toggle="modal" data-target="#goodtypeModal">没有你想要的？go添加</a>
+  </div>
+  <div class="form-group">
+    <label for="id_good_name">名称</label>
+      {{ form.good_name}}
+      <p class="help-block" style="color: red">{{ form.errors.good_name.0 }}</p>
+  </div>
+  <div class="form-group">
+    <label for="id_price">价格(元/份)</label>
+      {{ form.price}}
+    <p class="help-block" style="color: red">{{ form.errors.price.0 }}</p>
+  </div>
+  <div class="form-group">
+    <label for="id_discount">优惠</label>
+      {{ form.discount}}
+    <p class="help-block" style="color: red">{{ form.errors.discount.0 }}</p>
+  </div>
+      <div class="form-group">
+    <label for="id_good_num">库存</label>
+      {{ form.good_num}}
+    <p class="help-block" style="color: red">{{ form.errors.good_num.0 }}</p>
+  </div>
+    <div class="form-group">
+    <label for="id_good_num">备注</label>
+      {{ form.remark}}
+    <p class="help-block" style="color: red">{{ form.errors.remark.0 }}</p>
+  </div>
+    <input type="submit"  value="添加" class="btn btn-primary">
+</form>
+        </div>
+        <!-- Modal -->
+    <div class="modal fade " id="goodtypeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+$("#leftside li:eq(1)").addClass("layui-nav-itemed")
+$("#addgood").addClass("layui-this")
+$('#goodtypeModal').on('hidden.bs.modal', function (e) {
+    location.reload()
+})
+</script>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends 'User/userbase.html' %}
+{% block css %}
+    <style>
+        .hide {
+            display: none;
+        }
+
+        .shadow {
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            opacity: 0.4;
+            z-index: 999;
+        }
+
+        .add_Address {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            width: 400px;
+            height: 350px;
+            z-index: 1000;
+            background-color: white;
+            margin-left: -200px;
+            margin-top: -200px;
+        }
+
+        .edit_Address {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            width: 400px;
+            height: 350px;
+            z-index: 1000;
+            background-color: white;
+            margin-left: -200px;
+            margin-top: -200px;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <form method="post" action="/user/address/">
+        <div class="zongti"
+             style="width: 800px;height: 450px;margin-left: 200px;margin-top: 50px;">
+            {% csrf_token %}
+            <h3>地址管理</h3>
+            <hr>
+            {% csrf_token %}
+            {% for row in posts.object_list %}
+                <div class="dizhi"
+                     style="width: 200px;height: 100px;float: left;margin-left: 30px;margin-bottom: 10px;border: 1px solid #C1C1C1">
+                    <input type="hidden" name="address_id" id="address_id" value="{{ row.address_id }}">
+                    <span>{{ row.address_name }}</span>&nbsp;
+                    {% if row.sex == 1 %}
+                        先生
+                    {% else %}
+                        女士
+                    {% endif %}
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a  href="/user/del_address/?address_id={{ row.address_id }}" style="float: right"><i class="fa fa-trash"
+                                                                                    aria-hidden="true">&nbsp;</i></a>
+                    <a data-toggle="modal" href="/user/edit_address/?address_id={{ row.address_id }}" data-target="#show_details"  style="float: right"><i
+                            class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                    <br><br>
+                    <P>{{ row.location }}</P>
+                    <P>{{ row.address_tel }}</P>
+                </div>
+            {% endfor %}
+
+            <div onclick="add_Address();" class="tianjia"
+                 style=";width: 200px;height: 100px;margin: 10px;text-align: center;padding-top: 30px">
+                <button type="button" class="btn btn-info" >+添加地址</button>
+            </div>
+        </div>
+        <nav aria-label="Page navigation" style="margin-left: 200px">
+            <ul class="pagination">
+                <li>
+                    {% if posts.has_previous %}
+                        <a href="/user/address?page={{ posts.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    {% endif %}
+                </li>
+                {% for num in posts.paginator.page_range %}
+                    <li><a href="/user/address?page={{ num }}">{{ num }}</a></li>
+                {% endfor %}
+                <li>
+                    {% if posts.has_next %}
+                        <a href="/user/address?page={{ posts.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+   </form>
+    <div class="modal fade bs-example-modal-lg " id="show_details" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="width: 400px;left: 300px">
+
+            </div>
+        </div>
+    </div>
+        <div id="shadow" class="shadow hide"></div>
+        <div id="model" class="add_Address hide">
+        <div style="margin-left: 20px">
+            <h4>添加地址</h4>
+            <div class="form-group">
+                <label for="exampleInputPassword1">姓名</label><br>
+                <input id="user_name" type="text" name="user_name">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">手机号</label><br>
+                <input id="address_tel" type="text" name="address_tel">
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">性别</label><br>
+                <label><input id="sex" name="sex" type="radio" value="1">先生</label>
+                <label><input id="sex" name="sex" type="radio" value="2">女士</label>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">详细地址</label><br>
+                <input id="location" type="text" name="location">
+            </div>
+            <br>
+            <input type="button" class="btn btn-info" value="提交" onclick="addAjaxSend();"><span id="errormsg"></span>
+            <input type="button" class="btn btn-info" value="取消" onclick="cancleModel();">
+            </div>
+        </div>
+    <script>
+        function cancleModel() {
+            document.getElementById('shadow').classList.add('hide');
+            document.getElementById('model').classList.add('hide');
+            document.getElementById('model1').classList.add('hide');
+        }
+
+        function add_Address(ths) {
+            document.getElementById('shadow').classList.remove('hide');
+            document.getElementById('model').classList.remove('hide');
+        }
+
+        function addAjaxSend() {
+            var user_name = $('#user_name').val()
+            var address_tel = $('#address_tel').val()
+            var sex = $('input[name="sex"]:checked').val()
+            var location = $('#location').val()
+            console.log(sex, address_tel, user_name, location)
+            $.ajax({
+                url: '/user/add_address/',
+                type: 'GET',
+                data: {'user_name': user_name, 'address_tel': address_tel, 'sex': sex, 'location': location},
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    if (data.status) {
+                        location.reload()
+                    } else {
+                         location.reload()
+
+                    }
+                }
+            })
+        }
+
+        $('#show_details').on('hidden.bs.modal', function () {
+            $(this).removeData("bs.modal");
+            $(this).find(".modal-content").children().remove();
+        })
+
+    </script>
+
+
+
+{% endblock %}

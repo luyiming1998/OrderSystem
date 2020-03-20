@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel" align="center">修改商家信息</h4>
+    </div>
+            <form class="form-horizontal" action="/store/updateinfo/" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+    <div class="modal-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">账号</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">{{ store.account }}</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_store_avatar" class="col-sm-2 control-label">头像</label>
+                <div class="col-sm-10">
+                    {{ form.store_avatar }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_store_name" class="col-sm-2 control-label">商家名称</label>
+                <div class="col-sm-10">
+                    {{ form.store_name }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_open_time" class="col-sm-2 control-label">开店时间</label>
+                <div class="col-sm-10">
+                    {{ form.open_time }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_open_time" class="col-sm-2 control-label">打烊时间</label>
+                <div class="col-sm-10">
+                    {{ form.close_time }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_store_tel" class="col-sm-2 control-label">联系方式</label>
+                <div class="col-sm-10">
+                    {{ form.store_tel }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_address" class="col-sm-2 control-label">地址</label>
+                <div class="col-sm-10">
+                    {{ form.address }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_remark" class="col-sm-2 control-label">商家介绍</label>
+                <div class="col-sm-10">
+                    {{ form.remark }}
+                </div>
+            </div>
+
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="submit" class="btn btn-primary">保存</button>
+      </div>
+    </form>
+</div>
+</body>
+</html>

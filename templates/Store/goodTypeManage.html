@@ -1,0 +1,26 @@
+
+{% extends 'Store/storebase.html' %}
+{% block title %}添加商品
+{% endblock %}
+{% block leftside %}
+    {% include "Store/storeleftside.html" %}
+{% endblock %}
+{% block main %}
+    <div class="main">
+    <ol class="breadcrumb">
+        <li><a href="#">商品管理</a></li>
+        <li class="active">商品类型</li>
+    </ol>
+    {% for goodtype in goodtype_list %}
+
+        {{ goodtype }}
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+$("#leftside li:eq(1)").addClass("layui-nav-itemed")
+$("#goodtype").addClass("layui-this")
+</script>
+{% endblock %}

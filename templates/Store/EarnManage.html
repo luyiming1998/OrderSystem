@@ -1,0 +1,100 @@
+{% extends 'Store/storebase.html' %}
+{% block title %}
+    收益
+{% endblock %}
+{% block css %}
+<style>
+
+</style>
+{% endblock %}
+{% block leftside %}
+    {% include 'Store/storeleftside.html' %}
+{% endblock %}
+
+{% block main %}
+    <div class="main">
+                            <a data-toggle="modal" href="/store/orderdetail/1"
+                               data-target="#show_details">查看详情</a>
+        <div class="row" style="width: 1500px;margin: 0 auto;margin-top: 15px;">
+            <div class="col-md-4" >
+                <div class="panel panel-default" >
+                    <div class="panel-heading">
+                        <h3 class="panel-title">今日销售总额</h3>
+                    </div>
+                    <div class="panel-body">
+                        今日成交：{{ today.num }}单<br>订单总额： <i class="fa fa-jpy" aria-hidden="true"> {% if today.price %}{{ today.price }}{% else %}&nbsp;0{% endif %}</i>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">昨日销售总额</h3>
+                    </div>
+                    <div class="panel-body">
+                        作日日成交：{{ yesterday.num }}单<br>订单总额：<i class="fa fa-jpy"
+                                                              aria-hidden="true">{% if yesterday.price %}{{ yesterday.price }}{% else %}&nbsp;0{% endif %} </i>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-4" >
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">本月销售总额</h3>
+                    </div>
+                    <div class="panel-body">
+                        本月成交：{{ curmonth.num }}单 <br>订单总额： <i class="fa fa-jpy"
+                                                              aria-hidden="true"> {% if curmonth %}{{ curmonth.price }}{% else %}&nbsp;0{% endif %}</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-title"><h3 style="float: left;line-height: 5px">订单统计</h3>
+                                        <input type="text" style="width: 200px;" class="layui-input" id="sell_time" placeholder="查看月销售统计">
+</div>
+            </div>
+            <div class="panel-body">
+                {{ barchart |safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade bs-example-modal-lg " id="show_details" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="/static/plugins/layui/layui.js"></script>
+    <script>
+        $("#leftside li:eq(3)").addClass("layui-this")
+        layui.use('laydate', function(){
+          var laydate = layui.laydate;
+            laydate.render({
+            elem: '#sell_time'
+            ,type: 'month'
+          });
+        })
+    $("#sell_time").blur(function () {
+        var searchtime=$(this).val()
+        console.log(searchtime)
+        if(searchtime){
+            $("#show_details").modal({
+            remote: '/store/echart/?searchtime='+searchtime    // 从远程加载内容的地址
+        });
+        }
+    })
+        $('#show_details').on('hidden.bs.modal', function () {
+            $(this).removeData("bs.modal");
+            $(this).find(".modal-content").children().remove();
+        })
+    </script>
+{% endblock %}

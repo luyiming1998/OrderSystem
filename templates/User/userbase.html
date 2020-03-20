@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/plugins/font-awesome-4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <script src="/static/plugins/layui/layui.js"></script>
+    <script src="/static/js/jquery-3.4.1.js"></script>
+    <script src="/static/plugins/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <style type="text/css">
+    input[type=number] {
+		    -moz-appearance:textfield;
+		}
+		input[type=number]::-webkit-inner-spin-button,
+		input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .main{
+            position: absolute;
+            left: 0;
+            top: 60px;
+            right: 0;
+            bottom: 0;
+        }
+        ul{margin-bottom: 0}
+        a:hover{text-decoration: none}
+        </style>
+    {% block css %}
+
+    {% endblock %}
+
+
+</head>
+<body>
+<ul class="layui-nav">
+    <li class="layui-nav-item" style="position: relative;left: 45%;font-size: 25px;color: white">
+        <a href="/user/goodsmanage/">寻找美食</a>
+    </li>
+    <li style="display: inline-block;padding: 0 10px; position: relative;left:120px;line-height: 60px">
+        <span id="nowTime"></span>
+    </li>
+
+    <li class="layui-nav-item" style="position: absolute;right: 200px;">
+        <a href=""><i class="fa fa-envelope" aria-hidden="true"> 消息
+            <span class="layui-badge-dot layui-bg-orange"></span>
+        </i></a>
+    </li>
+    <li class="layui-nav-item" style="position: absolute;right: 20px;">
+        <a href=""><img src="/upload/{{ request.session.user_info.user_avatar }}" class="layui-nav-img">个人中心</a>
+        <dl class="layui-nav-child">
+            <dd><a href="/user/updateuser/">修改个人信息</a></dd>
+            <dd><a href="/user/address/">管理收货地址</a></dd>
+            <dd><a href="/user/user_order/">订单管理</a></dd>
+            <dd><a href="/user/logout/">退出</a></dd>
+        </dl>
+    </li>
+</ul>
+    {% block leftside %}
+    {% endblock %}
+      {% block main %}
+      {% endblock %}
+</div>
+<script src="/static/js/timer.js"></script>
+<script>
+    layui.use('element', function () {
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+
+        //监听导航点击
+        element.on('nav(demo)', function (elem) {
+            //console.log(elem)
+            layer.msg(elem.text());
+        });
+    });
+    /** 文档加载完成后立即执行的方法 */
+    // var weeks = new Array();
+    $(function () {
+        $("#nowTime").runTimer();
+    })
+</script>
+{% block script %}
+<script>
+$("#leftside li:eq(2)").addClass("layui-nav-itemed")
+$("#addgoodtype").addClass("layui-this")
+</script>
+{% endblock %}
+</body>
+</html>

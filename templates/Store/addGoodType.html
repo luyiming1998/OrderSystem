@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel" align="center">商品类型</h4>
+                <div class="input-group">
+                    <input type="text" name="type_name" class="form-control" placeholder="添加商品类型名">
+                    <span class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="addgoodtype()">添加</button>
+                    </span>
+                </div>
+    </div>
+    <div class="modal-body">
+        <table class="table table-hover">
+        <thead>
+        <tr>
+            <td>名称</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody id="typebody">
+        {% for type in type_list %}
+            <tr>
+            <td>{{ type.goodtype_name }}</td>
+            <td><a onclick="deltype(this,{{ type.goodtype_id }})">删除</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function addgoodtype(){
+        var type_name=$("input[name='type_name']").val()
+        if(type_name){
+            $.ajax({
+            url: "/store/addgoodtype/",
+            method: "post",
+            dataType: "JSON",
+            data: {"type_name":type_name,"csrfmiddlewaretoken": '{{ csrf_token }}'},
+            traditional: true,
+            success: function (args) {
+                if (args.status) {
+                    $("#typebody").append("<tr><td>"+type_name+"</td><td><a onclick='deltype(this,"+args.goodtype_id+")'>删除</a></td></tr>")
+                } else {
+                    alert(args.message)
+                }
+            }
+        })
+        }
+    }
+        function deltype(obj,id){
+            $.ajax({
+            url: "/store/delgoodtype/",
+            method: "post",
+            dataType: "JSON",
+            data: {"goodtype_id":id,"csrfmiddlewaretoken": '{{ csrf_token }}'},
+            traditional: true,
+            success: function (args) {
+                if (args.status) {
+                    $(obj).parent().parent().remove()
+                } else {
+                    alert(args.message)
+                }
+            }
+        })
+
+    }
+</script>
+</body>
+</html>

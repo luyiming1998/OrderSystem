@@ -1,0 +1,204 @@
+{% extends 'Store/storebase.html' %}
+{% block title %}商品查询
+{% endblock %}
+{% block leftside %}
+    {% include 'Store/storeleftside.html' %}
+{% endblock %}
+{% block main %}
+    <div class="main" style="background-color: #efefef">
+        <ol class="breadcrumb">
+            <li><a href="/store/goodsmanage">商品管理</a></li>
+            <li class="active">商品查询</li>
+        </ol>
+        <div>
+            <form action="/store/searchgood/" method="get">
+                <div class="input-group">
+                    <input type="text" name="good_name" class="form-control" placeholder="根据商品名称查找"
+                           value="{{ search_val }}">
+                    <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">查询</button>
+                    </span>
+                </div>
+            </form>
+            <nav aria-label="..." style="position: absolute;left: 25px;top: 350px">
+                <ul class="pager">
+                    <li class="previous">
+                        {% if post.has_previous %}
+                            {% if search_val %}
+                                <a href="/store/searchgood/?page={{ post.previous_page_number }}{% if search_val %}&good_name={{ search_val }}{% endif %}"
+                               style="width:50px;height: 200px;line-height: 200px;"><span
+                                    class="glyphicon glyphicon-menu-left"
+                                    aria-hidden="true"></span></a>
+                            {% else %}
+                                 <a href="/store/goodsmanage/?page={{ post.previous_page_number }}"
+                               style="width:50px;height: 200px;line-height: 200px;"><span
+                                    class="glyphicon glyphicon-menu-left"
+                                    aria-hidden="true"></span></a>
+                            {% endif %}
+
+
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+            <div style="width: 1380px;margin: 0 auto">
+                {% for good in post.object_list %}
+                    <div class="layui-card"
+                         style="float: left;text-align: center;width: 300px;height: 380px;margin: 15px;">
+                        <div class="layui-card-header"><span
+                                style="font-size: 20px;font-weight: bold">{{ good.2 }}</span>
+                            <a href="/store/updategood/{{ good.0 }}" title="修改"
+                               style="display: inline-block;position: absolute;right: 30px;color:mediumblue"><i
+                                    class="fa fa-pencil fa-lg" aria-hidden="true"></i></a>
+                            <a href="/store/delgood/{{ good.0 }}" title="删除"
+                               style="display: inline-block;position: absolute;right: 5px;color: red"><i
+                                    class="fa fa-times fa-lg" aria-hidden="true"></i></a></div>
+                        <div class="layui-card-body" style="padding-top: 50px;">
+                            <img src="/upload/{{ good.1 }}" alt="" style="width: 100px;height: 100px;"><br><br>
+                            <div class="row">
+                                <div class="col-md-5"
+                                     style="font-size:17px;font-weight:bold;text-align: right;padding-right: 0">价格：
+                                </div>
+                                <div class="col-md-7" style="text-align: left ;">
+                      <span style="font-size: 16px;color: red">
+                          {% if good.4 == None %}
+                              <i class="fa fa-jpy" aria-hidden="true"> {{ good.3 }}</i>
+                          {% else %}
+                              <i class="fa fa-jpy" aria-hidden="true"> {% widthratio good.4 1 good.3 %}</i>
+                              <del style="color: gray;font-size: 10px;"><i class="fa fa-jpy"
+                                                                           aria-hidden="true"> {{ good.3 }}</i></del>
+                          {% endif %}
+                      </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5"
+                                     style="font-size:17px;font-weight:bold;text-align: right;padding-right: 0">优惠：
+                                </div>
+                                <div class="col-md-7" style="text-align: left ;">
+                                    {% if good.4 == None %}无{% else %}{{ good.4 }}{% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5"
+                                     style="font-size:17px;font-weight:bold;text-align: right;padding-right: 0">库存：
+                                </div>
+                                <div class="col-md-7" style="text-align: left ;">
+                                    <span id="num_count1_{{ good.0 }}">{{ good.5 }}</span>
+                                    <input style="display:none;width: 50px;" type="text" id="num_count2_{{ good.0 }}"
+                                           value="{{ good.5 }}">份
+                                </div>
+                            </div>
+                            <br>
+                            <input type="button" class="btn btn-warning" onclick="btn_change(this,{{ good.0 }})"
+                                   value="修改库存"/>
+                            <div class="row" id="btn2_change" style="display:none;">
+                                <div class="col-md-5"
+                                     style="text-align: right;padding-right: 0">
+                                    <button type="button" class="btn btn-danger" onclick="btn_min({{ good.0 }})">报废-1
+                                    </button>
+                                </div>
+                                <div class="col-md-7" style="text-align: left ;">
+                                    <button type="button" class="btn btn-primary" onclick="btn_add({{ good.0 }})">入库+1
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button"
+                                    style=" text-align:center;display: none;position: absolute;top: 10px;right: 10px;width:55px;height:55px;border-radius: 50%"
+                                    class="btn btn-success" id="save_single{{ good.0 }}"
+                                    onclick="save_single(this,{{ good.0 }})">保存
+                            </button>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <nav aria-label="..." style="position: absolute;right: 30px;top: 350px">
+            <ul class="pager">
+                <li class="next">
+                    {% if post.has_next %}
+                        {% if search_val %}
+                            <a href="/store/searchgood/?page={{ post.next_page_number }}{% if search_val %}&good_name={{ search_val }}{% endif %}"
+                               style="width:50px;height: 200px;line-height: 200px;"><span
+                                    class="glyphicon glyphicon-menu-right"
+                                    aria-hidden="true"></span></a>
+                        {% else %}
+                            <a href="/store/goodsmanage/?page={{ post.next_page_number }}"style="width:50px;height: 200px;line-height: 200px;"><span
+                                    class="glyphicon glyphicon-menu-right"
+                                    aria-hidden="true"></span></a>
+                        {% endif %}
+
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $("#leftside li:eq(1)").addClass("layui-nav-itemed")
+        $("#goodsmanage").addClass("layui-this")
+        $(function () {
+            btn_change()
+        })
+
+        function btn_change(obj, good_id) {
+            console.log(good_id)
+            $("#save_single" + good_id).show()
+            $("#num_count1_" + good_id).hide()
+            $("#num_count2_" + good_id).show()
+            $(obj).hide()
+            $(obj).next().show()
+        }
+
+        function btn_add(good_id) {
+            console.log(good_id)
+            var num1 = $("#num_count1_" + good_id)
+            var num2 = $("#num_count2_" + good_id)
+            num_count = parseInt(num2.val()) + parseInt(1)
+            if (num_count > 9999)
+                num_count = 9999
+            num1.text(num_count)
+            num2.val(num_count)
+
+        }
+
+        function btn_min(good_id) {
+            var num1 = $("#num_count1_" + good_id)
+            var num2 = $("#num_count2_" + good_id)
+            num_count = parseInt(num2.val()) - parseInt(1)
+            if (num_count < 0)
+                num_count = 0
+            num1.text(num_count)
+            num2.val(num_count)
+        }
+
+        function save_single(obj, good_id) {
+            var num_count = num2 = $("#num_count2_" + good_id).val()
+            $.ajax({
+                url: "/store/update_good_num/",
+                method: "post",
+                dataType: "JSON",
+                data: {"num_count": num_count, "good_id": good_id, "csrfmiddlewaretoken": '{{ csrf_token }}'},
+                traditional: true,
+                success: function (args) {
+                    if (args.status) {
+                        $("#save_single" + good_id).hide()
+                        $("#num_count1_" + good_id).show()
+                        $("#num_count2_" + good_id).hide()
+                        $(obj).hide()
+                        $(obj).prev().hide()
+                        $(obj).prev().prev().show()
+                    } else {
+                        alert(args.message)
+                    }
+                }
+            })
+        }
+
+        function save_all() {
+
+        }
+    </script>
+{% endblock %}

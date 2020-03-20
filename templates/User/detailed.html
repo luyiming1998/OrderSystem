@@ -1,0 +1,232 @@
+{% extends 'User/userbase.html' %}
+{% block css %}
+<style>
+.main2{
+    position: relative;
+    left: 0;
+    top: 0px;
+    right: 0;
+}
+</style>
+{% endblock %}
+
+
+{% block main %}
+    <div class="main2" style="background-color: #f9f9f9">
+        <div class="header"
+             style="background-image: url('/static/img/shop-bg.0391dd.jpg');background-size: cover;color: white">
+            <div style="width: 1200px;height:182px;margin: 0 auto;">
+                {% for row in store_list %}
+                    <div class="media" style="padding-top: 35px;">
+                        <div class="media-left">
+                            <a href="#">
+                                <img src="/upload/{{ row.store_avatar }}" alt="..." class="img-circle"
+                                     style="width: 95px;height: 95px;">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h1 class="media-heading">{{ row.store_name }}</h1>
+                            <p style="font-size: 18px">{{ row.remark }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div style="width: 1200px;margin: 0 auto">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">所有商品</li>
+                    <li>评价</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+
+                        <table id="tab" class="table ul-right" style="width: 80%">
+                            {% for row in good_list %}
+                                <div class="media"
+                                     style="width: 420px;height: 100px;padding: 5px;background-color: white;float: left;margin:10px 15px;">
+                                    <div class="media-left">
+                                        <a href="#">
+                                            <img class="media-object" src="/upload/{{ row.good_pic }}" alt="..."
+                                                 width="100px" height="100px">
+                                        </a>
+                                    </div>
+                                    <div class="media-body" style="padding: 5px;position: relative">
+                                        <p class="media-heading"
+                                           style="font-size: 14px;font-weight: bold">{{ row.good_name }}</p>
+                                        <p style="font-size: 12px;color: #999">{{ row.remark |truncatechars:20 }}</p>
+                                        {% load templatehelper %}
+                                        <p><i class="fa fa-jpy fa-lg" aria-hidden="true" style="color: red">
+                                            {% if row.discount %}{{ row.price |mult:row.discount }}{% else %}
+                                                {{ row.price }}{% endif %}</i></p>
+                                        <div style="position: absolute;bottom: 15px;right: 15px;cursor: pointer"
+                                             onclick="addgood(this,{{ row.good_id }},'{{ row.good_name }}',
+                                                     {% if row.discount %}{{ row.price |mult:row.discount }}{% else %}{{ row.price }}{% endif %})">
+                                            <i class="fa fa-plus-circle fa-2x" style="color: #337ab7"
+                                               aria-hidden="true"></i>
+                                        </div>
+                                        <div style="display:none;position: absolute;bottom: 15px;right: 45px;cursor: pointer"
+                                             onclick="mingood(this,{{ row.good_id }},'{{ row.good_name }}',
+                                                     {% if row.discount %}{{ row.price |mult:row.discount }}{% else %}{{ row.price }}{% endif %})">
+                                            <i class="fa fa-minus-circle fa-2x" style="color: #337ab7"
+                                               aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div class="layui-tab-item">
+                        <table class="table">
+                            <tr>
+                                <td>id</td>
+                                <td>内容</td>
+                                <td>level</td>
+                                <td>评论时间</td>
+                                <td>评论状态</td>
+                            </tr>
+                            {% for row in comment_list %}
+                                <tr>
+                                    <td>{{ row.comment_id }}</td>
+                                    <td>{{ row.comment_content }}</td>
+                                    <td>{{ row.level }}</td>
+                                    <td>{{ row.create_date | date:"Y-m-d H:i:s" }}</td>
+                                    <td>{{ row.comment_status }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div class="layui-tab-item">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="position: fixed;z-index: 999;bottom: 0;right: 0;width: 320px">
+        <div style="position:absolute; bottom: 26px;right: 0;width: 320px">
+            <ul class="list-group" id="shopcart">
+            </ul>
+        </div>
+        <div style="width: 320px;height: 46px;background-color: #2c2c2c;color: white">
+            <i class="fa fa-shopping-cart fa-2x" style="line-height: 46px;margin-left: 5px;" aria-hidden="true"></i>&nbsp;
+            <i class="fa fa-jpy fa-lg" aria-hidden="true"></i><span style="font-size: 25px" id="total_price"> 0</span>
+            <button style="position:absolute;right:0;width:120px;height: 46px;background-color: #51d862;font-size: 14px;color: white;border: 0"
+                    onclick="cal_sum()">去结算
+            </button>
+        </div>
+    </div>
+    <script>
+        function addgood(obj, good_id, good_name, price) {
+            $(obj).next().show()
+            {#console.log(obj,good_id,good_name,price)#}
+            var total_price = $("#total_price").text()
+            var num_obj = $("#good_num" + good_id).text();
+            console.log(num_obj)
+            if (num_obj) {
+                $("#good_num" + good_id).text(parseInt(num_obj) + 1)
+                var get_price = $("#good_price" + good_id).text();
+                $("#good_num" + good_id).text(parseInt(num_obj) + 1)
+                $("#good_price" + good_id).text(parseFloat(get_price) + parseFloat(price));
+            } else {
+                var str1 = '<li class="list-group-item">' +
+                    '<div style="display: inline-block;width: 150px;">' + good_name + '</div>' +
+                        '<input type="hidden" name="good_id" value="'+good_id+'">'+
+                    '<div style="display: inline-block;width: 65px;" id="good_num' + good_id + '">' + 1 + '</div>' +
+                    '<div style="display: inline-block;width: 65px;text-align: right"><i id="good_price' + good_id + '" class="fa fa-jpy" style="color: red" aria-hidden="true">' + price + '</i></div>' +
+                    '</li>';
+                $("#shopcart").append(str1)
+            }
+            $("#total_price").text((parseFloat(total_price) + parseFloat(price)).toFixed(2))
+        }
+
+        function mingood(obj, good_id, good_name, price) {
+            {#console.log(obj,good_id,good_name,price)#}
+            var total_price = $("#total_price").text()
+            var num_obj = $("#good_num" + good_id).text();
+            console.log(num_obj)
+            if (num_obj) {
+                $("#good_num" + good_id).text(parseInt(num_obj) - 1)
+                var get_price = $("#good_price" + good_id).text();
+                $("#good_num" + good_id).text(parseInt(num_obj) - 1)
+                $("#good_price" + good_id).text(parseFloat(get_price) - parseFloat(price));
+                if (num_obj === "1") {
+                    $("#good_num" + good_id).parent().remove()
+                    $(obj).hide()
+                }
+            }
+            $("#total_price").text((parseFloat(total_price) - parseFloat(price)).toFixed(2))
+        }
+
+        layui.use('element', function () {
+            var $ = layui.jquery
+                , element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+            //触发事件
+            var active = {
+                tabAdd: function () {
+                    //新增一个Tab项
+                    element.tabAdd('demo', {
+                        title: '新选项' + (Math.random() * 1000 | 0) //用于演示
+                        , content: '内容' + (Math.random() * 1000 | 0)
+                        , id: new Date().getTime() //实际使用一般是规定好的id，这里以时间戳模拟下
+                    })
+                }
+                , tabDelete: function (othis) {
+                    //删除指定Tab项
+                    element.tabDelete('demo', '44'); //删除：“商品管理”
+
+
+                    othis.addClass('layui-btn-disabled');
+                }
+                , tabChange: function () {
+                    //切换到指定Tab项
+                    element.tabChange('demo', '22'); //切换到：用户管理
+                }
+            };
+
+            $('.site-demo-active').on('click', function () {
+                var othis = $(this), type = othis.data('type');
+                active[type] ? active[type].call(this, othis) : '';
+            });
+
+            //Hash地址的定位
+            var layid = location.hash.replace(/^#test=/, '');
+            element.tabChange('test', layid);
+
+            element.on('tab(test)', function (elem) {
+                location.hash = 'test=' + $(this).attr('lay-id');
+            });
+
+        });
+
+        function cal_sum() {
+            var arrs=$("input[name='good_id']")
+            var arryObj=new Array();
+            $.each(arrs,function (i,j) {
+                var good_id=$(j).val()
+                var good_num=$(j).next().text()
+                var price=$(j).next().next().text()
+                console.log(good_id,good_num,price)
+                arryObj.push([good_id,good_num,price])
+            })
+            var total_price=$("#total_price").text()
+            console.log(arryObj)
+            $.ajax({
+                url: '/user/display/',
+                type: 'POST',
+                async: false,
+                data: {"total_price":total_price,"arryObj": arryObj, 'store_id': '{{store_list.0.store_id}}',"csrfmiddlewaretoken": '{{ csrf_token }}'},
+                dataType: 'JSON',
+                traditional:true,
+                success: function (data) {
+                    if (data.status) {
+                        alert("下单成功")
+                        location.reload()
+                    } else {
+                        console.log('发送成功')
+                    }
+
+                }
+            })
+        }
+    </script>
+{% endblock %}

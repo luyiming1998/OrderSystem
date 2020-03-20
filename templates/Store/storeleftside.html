@@ -1,0 +1,17 @@
+<ul id="leftside" class="layui-nav layui-nav-tree layui-nav-side">
+    <li class="layui-nav-itemed">
+        <p style="display:block;font-size: 20px;height: 60px;line-height: 60px;padding-left: 10px;">欢迎商家：{{ request.session.store_info.store_name }}</p>
+    </li>
+    <li class="layui-nav-item">
+        <a href="javascript:;">商品管理</a>
+        <dl class="layui-nav-child">
+            <dd id="goodsmanage"><a href="/store/goodsmanage">商品查询</a></dd>
+            <dd id="addgood"><a href="/store/addgood">添加商品</a></dd>
+        </dl>
+    </li>
+
+    <li class="layui-nav-item">
+        <a href="/store/ordermanage/">订单管理</a>
+    </li>
+    <li class="layui-nav-item"><a href="/store/earnmanage"><i class="fa fa-bar-chart" aria-hidden="true"> 收益</i></a></li>
+</ul>

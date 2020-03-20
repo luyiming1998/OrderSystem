@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="/static/plugins/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/plugins/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <style>
+        .layui-tab-title{
+            border-bottom-width: 1px;
+        }
+        .layui-tab-title .layui-this:after{
+            border-bottom-color:#fff
+        }
+    </style>
+</head>
+<body>
+<div class="layui-tab" style="width: 500px;margin: 0 auto;border: 1px solid #e6e6e6;margin-top: 200px">
+  <ul class="layui-tab-title" style="box-sizing: unset;">
+    <li class="layui-this">用户</li>
+    <li>商家</li>
+    <li>骑手</li>
+
+  </ul>
+  <div class="layui-tab-content">
+    <div class="layui-tab-item layui-show">
+        <form action="/login/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="1">
+            <div class="form-group">
+            <label for="account">用户名</label>
+            <input type="text" class="form-control" id="account"  name="account">
+          </div>
+          <div class="form-group">
+            <label for="pwd">密码</label>
+            <input type="password" class="form-control" id="pwd" name="pwd">
+          </div>
+        <button type="submit" class="btn btn-primary">登录</button>
+            <a href="/user/register/" class="btn btn-default">注册</a>
+        </form>
+    </div>
+    <div class="layui-tab-item">
+        <form action="/login/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="2">
+            <div class="form-group">
+            <label for="account">用户名</label>
+            <input type="text" class="form-control" id="account" name="account">
+          </div>
+          <div class="form-group">
+            <label for="pwd">密码</label>
+            <input type="password" class="form-control" id="pwd" name="pwd">
+          </div>
+        <button type="submit" class="btn btn-primary">登录</button>
+        <a href="/store/register/" class="btn btn-default">注册</a>
+        </form>
+    </div>
+    <div class="layui-tab-item">
+        <form action="/login/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="type" value="3">
+            <div class="form-group">
+            <label for="account">用户名</label>
+            <input type="text" class="form-control" id="account" name="account">
+          </div>
+          <div class="form-group">
+            <label for="pwd">密码</label>
+            <input type="password" class="form-control" id="pwd" name="pwd">
+          </div>
+        <button type="submit" class="btn btn-primary">登录</button>
+        <a href="/rider/register/" class="btn btn-default">注册</a>
+        </form>
+    </div>
+  </div>
+</div>
+
+<script src="/static/plugins/layui/layui.js"></script>
+<script>
+layui.use('element', function(){
+  var $ = layui.jquery
+  ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
+
+  //触发事件
+  var active = {
+    tabAdd: function(){
+      //新增一个Tab项
+      element.tabAdd('demo', {
+        title: '新选项'+ (Math.random()*1000|0) //用于演示
+        ,content: '内容'+ (Math.random()*1000|0)
+        ,id: new Date().getTime() //实际使用一般是规定好的id，这里以时间戳模拟下
+      })
+    }
+  };
+
+  $('.site-demo-active').on('click', function(){
+    var othis = $(this), type = othis.data('type');
+    active[type] ? active[type].call(this, othis) : '';
+  });
+
+
+});
+</script>
+</body>
+</html>

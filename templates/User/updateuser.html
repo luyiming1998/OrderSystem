@@ -1,0 +1,36 @@
+{% extends 'User/userbase.html' %}
+{% block css %}
+    <style>
+    .main{
+        position: absolute;
+        left: 200px;
+        width: 100%;
+    }
+    td{
+        width: 220px;
+    }
+    </style>
+{% endblock %}
+{% block main %}
+     <div class="main">
+    <form method="post" action="/user/updateuser/" enctype="multipart/form-data">
+        <div class="yy" style="width: 350px ;height: 300px;margin: 0 auto">
+    {% csrf_token %}
+        <ul class=list-group"" style="text-align: center;margin-top: 150px">
+            <li class="list-group-item"><input type="hidden" name="user_id" value="{{ user_list.user_id }}"></li>
+            <li class="list-group-item">修改用户头像：<input type="file" name="user_avatar"></li>
+            <li class="list-group-item">登录名：<input type="text" name="account" value="{{ user_list.account }}"></li>
+            <li class="list-group-item">密码：<input type="text" name="pwd" value="{{ user_list.pwd }}"></li>
+            <li class="list-group-item">用户名：<input type="text" name="user_name" value="{{ user_list.user_name  }}"></li>
+            <li class="list-group-item">手机号：<input type="text" name="user_tel" value="{{ user_list.user_tel }}"></li>
+        </ul>
+        <input class="btn" type="submit" value="提交">
+        </div>
+
+    </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

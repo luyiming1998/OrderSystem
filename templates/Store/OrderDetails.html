@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel" align="center">订单编号：{{ order.order_id }}</h4>
+    </div>
+    <div class="modal-body">
+        <div style="min-height: 300px">
+            {% for detail in detail_list %}
+                <dl class="dl-horizontal">
+                    <dt>{{ detail.good__good_name }}</dt>
+                    <dd>x{{ detail.number }}</dd>
+                </dl>
+
+            {% endfor %}
+        </div>
+        <hr>
+        <p style="float: right" align="right"><i class="fa fa-jpy"
+                                                 aria-hidden="true"> {{ order.total_price }}&nbsp;元</i></p>
+        <p align="center">共：{{ detail_list|length }}&nbsp;份</p>
+        <div style="position: absolute;right:25%;top: 5%">
+            <dl class="dl-horizontal">
+                <dt>订单状态：</dt>
+                <dd>{% if order.order_status == 0 %}
+                    已取消
+                {% elif order.order_status == 1 %}
+                    未接单
+                {% elif order.order_status == 2 %}
+                    已接单
+                {% elif order.order_status == 3 %}
+                    骑手接单
+                {% elif order.order_status == 3 %}
+                    骑手取到商品
+                {% elif order.order_status == 3 %}
+                    已送达
+                {% endif %}</dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>用户名：</dt>
+                <dd>{{ address.address_name }}{% if address.sex == 1 %}
+                    （先生）
+                {% else %}
+                    （女士）
+                {% endif %}</dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>地址：</dt>
+                <dd>{{ address.location }}</dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>手机号：</dt>
+                <dd>{{ address.address_tel }}</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+</body>
+</html>

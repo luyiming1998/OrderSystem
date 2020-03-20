@@ -1,0 +1,35 @@
+{% extends 'User/userbase.html' %}
+{% block leftside %}
+    {% include 'User/userleftside.html' %}
+{% endblock %}
+{% block css %}
+{% endblock %}
+
+{% block main %}
+<form method="post" action="/user/add_address/">
+{% csrf_token %}
+<h1>添加收货地址</h1>
+<form>
+    <input type="hidden" id="exampleInputEmail1" name=""address_id>
+  <div class="form-group">
+    <label for="exampleInputPassword1">姓名</label><br>
+    <input type="text" name="user_name" >
+  </div>
+    <div class="form-group">
+    <label for="exampleInputPassword1">手机号</label><br>
+    <input type="text" name="address_tel">
+  </div>
+    <div class="form-group">
+    <label for="exampleInputPassword1">性别</label><br>
+    <label><input name="sex" type="radio" value="1">先生</label>
+    <label><input name="sex" type="radio" value="2">女士</label>
+  </div>
+    <div class="form-group">
+    <label for="exampleInputPassword1">详细地址</label><br>
+    <input type="text" name="location" >
+  </div>
+      <input type="submit" value="提交">
+</form>
+
+
+{% endblock %}
